@@ -15,7 +15,6 @@ namespace SimpleImageDisplayer
         private static readonly int IMG_ROW = 50;
         private static readonly int IMG_COL = 225;
         private Bitmap image = new Bitmap(IMG_COL, IMG_ROW);
-        private byte[,] imageBuffer = new byte[IMG_ROW, IMG_COL / 8 + 1];
         private int bufferCol = 0;
         private int bufferRow = 0;
 
@@ -46,33 +45,6 @@ namespace SimpleImageDisplayer
         {
             e.Graphics.ScaleTransform((float)picImage.Width / IMG_COL, (float)picImage.Height / IMG_ROW);
             e.Graphics.DrawImage(picImage.Image, 0, 0);
-        }
-
-        unsafe private void RenderImage(byte[,] imageBuffer)
-        {
-            var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height)
-                , ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            for (int row = 0; row < data.Height; ++row)
-            {
-                for (int col = 0; col < data.Width; ++col)
-                {
-                    var color = (byte*)data.Scan0 + row * data.Stride + col * 3;
-                    if ((imageBuffer[row, col / 8] & (0x01 << (col % 8))) != 0)
-                    {
-                        color[0] = 255;
-                        color[1] = 255;
-                        color[2] = 255;
-                    }
-                    else
-                    {
-                        color[0] = 0;
-                        color[1] = 0;
-                        color[2] = 0;
-                    }
-                }
-            }
-            image.UnlockBits(data);
-            picImage.Refresh();
         }
 
         private void serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -155,7 +127,7 @@ namespace SimpleImageDisplayer
                     serialPort.Open();
                     serialPortIsOpen = true;
                     btnRefresh.Enabled = false;
-                    btnOpenData.Enabled = false;
+                    btnOpenImage.Enabled = false;
                     btnOpenPort.Text = "关闭串口";
                 }
                 else
@@ -163,44 +135,13 @@ namespace SimpleImageDisplayer
                     serialPort.Close();
                     serialPortIsOpen = false;
                     btnRefresh.Enabled = true;
-                    btnOpenData.Enabled = true;
+                    btnOpenImage.Enabled = true;
                     btnOpenPort.Text = "打开串口";
                 }
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void btnOpenData_Click(object sender, EventArgs e)
-        {
-            openFileDialog.ShowDialog();
-        }
-
-        private void openFileDialog_FileOk(object sender, CancelEventArgs e)
-        {
-            using (var file = File.OpenRead(openFileDialog.FileName))
-            {
-                using (var reader = new StreamReader(file))
-                {
-                    var content = reader.ReadToEnd();
-                    var hexStringArray = content.Trim().Split(' ', '\n');
-                    byte value;
-                    for(int i = 0; i < hexStringArray.Length; ++i)
-                    {
-                        value = byte.Parse(hexStringArray[i], System.Globalization.NumberStyles.HexNumber);
-                        if (value != 0x00)
-                        {
-                            imageBuffer[i / IMG_COL, (i % IMG_COL) / 8] |= (byte)(0x01 << (i % IMG_COL % 8));
-                        }
-                        else
-                        {
-                            imageBuffer[i / IMG_COL, (i % IMG_COL) / 8] &= (byte)~(0x01 << (i % IMG_COL % 8));
-                        }
-                    }
-                    RenderImage(imageBuffer);
-                }
             }
         }
 
@@ -216,6 +157,99 @@ namespace SimpleImageDisplayer
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnOpenImage_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    image = (Bitmap)Image.FromFile(openFileDialog.FileName);
+                    picImage.Image = image;
+                    picImage.Refresh();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnOpenData_Click(object sender, EventArgs e)
+        {
+            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using (var file = File.OpenRead(openFileDialog.FileName))
+                {
+                    using (var reader = new StreamReader(file))
+                    {
+                        try
+                        {
+                            image = new Bitmap(IMG_COL, IMG_ROW);
+                            var content = reader.ReadToEnd();
+                            var hexStringArray = content.Trim().Split(' ', '\n');
+                            byte value;
+                            for (int i = 0; i < hexStringArray.Length; ++i)
+                            {
+                                value = byte.Parse(hexStringArray[i], System.Globalization.NumberStyles.HexNumber);
+                                image.SetPixel(i % IMG_COL, i / IMG_COL, value != 0x00 ? Color.White : Color.Black);
+                            }
+                            picImage.Image = image;
+                            picImage.Refresh();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    image.Save(saveFileDialog.FileName, ImageFormat.Bmp);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnSaveData_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                using (var file = File.OpenWrite(saveFileDialog.FileName))
+                {
+                    using (var writer = new StreamWriter(file))
+                    {
+                        try
+                        {
+                            int cnt = 0;
+                            for (int row = 0; row < IMG_ROW; ++row)
+                            {
+                                for (int col = 0; col < IMG_COL; ++col)
+                                {
+                                    ++cnt;
+                                    writer.Write(image.GetPixel(col, row) == Color.FromArgb(unchecked((int)0xffffffff)) ? "FE" : "00");
+                                    writer.Write(cnt % 16 == 0 ? "\n" : " ");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                    }
+                }
             }
         }
     }

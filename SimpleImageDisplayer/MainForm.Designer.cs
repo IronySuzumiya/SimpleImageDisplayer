@@ -35,8 +35,12 @@
             this.picImage = new System.Windows.Forms.PictureBox();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnOpenData = new System.Windows.Forms.Button();
+            this.btnOpenImage = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnOpenData = new System.Windows.Forms.Button();
+            this.btnSaveImage = new System.Windows.Forms.Button();
+            this.btnSaveData = new System.Windows.Forms.Button();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.picImage)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,7 +78,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.picImage.Location = new System.Drawing.Point(15, 43);
             this.picImage.Name = "picImage";
-            this.picImage.Size = new System.Drawing.Size(446, 261);
+            this.picImage.Size = new System.Drawing.Size(610, 315);
             this.picImage.TabIndex = 3;
             this.picImage.TabStop = false;
             this.picImage.Paint += new System.Windows.Forms.PaintEventHandler(this.picImage_Paint);
@@ -94,27 +98,59 @@
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // btnOpenData
+            // btnOpenImage
             // 
-            this.btnOpenData.Location = new System.Drawing.Point(308, 12);
-            this.btnOpenData.Name = "btnOpenData";
-            this.btnOpenData.Size = new System.Drawing.Size(75, 23);
-            this.btnOpenData.TabIndex = 5;
-            this.btnOpenData.Text = "打开数据";
-            this.btnOpenData.UseVisualStyleBackColor = true;
-            this.btnOpenData.Click += new System.EventHandler(this.btnOpenData_Click);
+            this.btnOpenImage.Location = new System.Drawing.Point(308, 12);
+            this.btnOpenImage.Name = "btnOpenImage";
+            this.btnOpenImage.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenImage.TabIndex = 5;
+            this.btnOpenImage.Text = "打开图像";
+            this.btnOpenImage.UseVisualStyleBackColor = true;
+            this.btnOpenImage.Click += new System.EventHandler(this.btnOpenImage_Click);
             // 
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
-            this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
+            // 
+            // btnOpenData
+            // 
+            this.btnOpenData.Location = new System.Drawing.Point(389, 12);
+            this.btnOpenData.Name = "btnOpenData";
+            this.btnOpenData.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenData.TabIndex = 6;
+            this.btnOpenData.Text = "打开数据";
+            this.btnOpenData.UseVisualStyleBackColor = true;
+            this.btnOpenData.Click += new System.EventHandler(this.btnOpenData_Click);
+            // 
+            // btnSaveImage
+            // 
+            this.btnSaveImage.Location = new System.Drawing.Point(470, 12);
+            this.btnSaveImage.Name = "btnSaveImage";
+            this.btnSaveImage.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveImage.TabIndex = 7;
+            this.btnSaveImage.Text = "保存图像";
+            this.btnSaveImage.UseVisualStyleBackColor = true;
+            this.btnSaveImage.Click += new System.EventHandler(this.btnSaveImage_Click);
+            // 
+            // btnSaveData
+            // 
+            this.btnSaveData.Location = new System.Drawing.Point(551, 12);
+            this.btnSaveData.Name = "btnSaveData";
+            this.btnSaveData.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveData.TabIndex = 8;
+            this.btnSaveData.Text = "保存数据";
+            this.btnSaveData.UseVisualStyleBackColor = true;
+            this.btnSaveData.Click += new System.EventHandler(this.btnSaveData_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(473, 316);
+            this.ClientSize = new System.Drawing.Size(637, 370);
+            this.Controls.Add(this.btnSaveData);
+            this.Controls.Add(this.btnSaveImage);
             this.Controls.Add(this.btnOpenData);
+            this.Controls.Add(this.btnOpenImage);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.picImage);
             this.Controls.Add(this.btnOpenPort);
@@ -140,8 +176,12 @@
         private System.Windows.Forms.PictureBox picImage;
         private System.IO.Ports.SerialPort serialPort;
         private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnOpenData;
+        private System.Windows.Forms.Button btnOpenImage;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.Button btnOpenData;
+        private System.Windows.Forms.Button btnSaveImage;
+        private System.Windows.Forms.Button btnSaveData;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
     }
 }
 
