@@ -50,7 +50,7 @@ namespace SimpleImageDisplayer
         private void serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             Thread.Sleep(100);
-            Invoke(new EventHandler(delegate
+            Invoke(new EventHandler((_, __) =>
             {
                 var bytes = new byte[serialPort.BytesToRead];
                 serialPort.Read(bytes, 0, bytes.Length);
@@ -251,6 +251,11 @@ namespace SimpleImageDisplayer
                     }
                 }
             }
+        }
+
+        private void picImage_SizeChanged(object sender, EventArgs e)
+        {
+            picImage.Refresh();
         }
     }
 }

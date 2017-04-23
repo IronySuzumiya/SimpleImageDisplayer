@@ -81,6 +81,7 @@
             this.picImage.Size = new System.Drawing.Size(610, 315);
             this.picImage.TabIndex = 3;
             this.picImage.TabStop = false;
+            this.picImage.SizeChanged += new System.EventHandler(this.picImage_SizeChanged);
             this.picImage.Paint += new System.Windows.Forms.PaintEventHandler(this.picImage_Paint);
             // 
             // serialPort
