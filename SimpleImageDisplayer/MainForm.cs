@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -95,7 +94,7 @@ namespace SimpleImageDisplayer
                                 picImage.Refresh();
                                 break;
                             }
-                            for(int j = 0; j < 8 && bufferCol < IMG_COL; ++bufferCol, ++j)
+                            for (int j = 0; j < 8 && bufferCol < IMG_COL; ++bufferCol, ++j)
                             {
                                 image.SetPixel(bufferCol, bufferRow, (bytes[i] & (0x01 << j)) == 0x00 ? Color.White : Color.Black);
                             }
@@ -107,6 +106,7 @@ namespace SimpleImageDisplayer
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            cmbPortName.Items.Clear();
             foreach (var port in SerialPort.GetPortNames())
             {
                 cmbPortName.Items.Add(port);
@@ -128,14 +128,21 @@ namespace SimpleImageDisplayer
                     serialPortIsOpen = true;
                     btnRefresh.Enabled = false;
                     btnOpenImage.Enabled = false;
+                    btnOpenData.Enabled = false;
+                    btnSaveImage.Enabled = false;
+                    btnSaveData.Enabled = false;
                     btnOpenPort.Text = "关闭串口";
                 }
                 else
                 {
+                    serialPort.DiscardInBuffer();
                     serialPort.Close();
                     serialPortIsOpen = false;
                     btnRefresh.Enabled = true;
                     btnOpenImage.Enabled = true;
+                    btnOpenData.Enabled = true;
+                    btnSaveImage.Enabled = true;
+                    btnSaveData.Enabled = true;
                     btnOpenPort.Text = "打开串口";
                 }
             }
@@ -151,6 +158,7 @@ namespace SimpleImageDisplayer
             {
                 if (serialPortIsOpen)
                 {
+                    serialPort.DiscardInBuffer();
                     serialPort.Close();
                 }
             }
